@@ -53,7 +53,17 @@ A API Genroom oferece uma série de endpoints para manipulação e consulta de d
 
 1. Clone o repositório para sua máquina local.
 2. Certifique-se de ter o Java 17 e Maven instalados.
-3. Navegue até o diretório do projeto e execute o comando: `mvn spring-boot:run`.
-4. A aplicação estará rodando no endereço: `http://localhost:8081`.
+3. configure o application.properties para seu dba em Postgresql exemplo:
+```batch
+spring.datasource.url=jdbc:postgresql://localhost:5432/genroom
+spring.datasource.username=postgres
+spring.datasource.password=12345
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+debug=true
+server.port=8081
+```
+5. Navegue até o diretório do projeto e execute o comando: `mvn spring-boot:run`.
+6. A aplicação estará rodando no endereço: `http://localhost:8081`.
 
 Para testar os endpoints, você pode usar ferramentas como Postman ou Curl. As requisições devem ser feitas para a base da URL `http://localhost:8081/api`.
