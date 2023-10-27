@@ -26,14 +26,29 @@ public class SalaController {
     @GetMapping("/{id}")
     public ResponseEntity<Sala> findById(@PathVariable Long id) {
         return salaService.findById(id)
-                .map(sala -> ResponseEntity.ok(sala))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // Endpoint para criar uma nova sala
     @PostMapping
-    public Sala create(@RequestBody Sala sala) {
-        return salaService.save(sala);
+    public ResponseEntity<Sala> create(@RequestBody Sala sala) {
+        try {
+            Sala newSala = salaService.save(sala);
+            return ResponseEntity.ok(newSala);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @GetMapping("/disponiveis/capacidade/{capacidade}")
+    public List<Sala> findAvailableRoomsByCapacity(@PathVariable int capacidade, @RequestParam LocalDateTime inicio, @RequestParam LocalDateTime fim) {
+        return salaService.findAvailableRoomsByCapacity(capacidade, inicio, fim);
+    }
+
+    @GetMapping("/nome/{nome}/capacidade/{capacidade}")
+    public List<Sala> findByNomeAndCapacidadeGreaterThanEqual(@PathVariable String nome, @PathVariable int capacidade) {
+        return salaService.findByNomeAndCapacidadeGreaterThanEqual(nome, capacidade);
     }
 
     // Endpoint para atualizar uma sala existente
@@ -41,7 +56,11 @@ public class SalaController {
     public ResponseEntity<Sala> update(@PathVariable Long id, @RequestBody Sala sala) {
         return salaService.findById(id).map(existingSala -> {
             sala.setId(id);
-            return ResponseEntity.ok(salaService.save(sala));
+            try {
+                return ResponseEntity.ok(salaService.save(sala));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }).orElse(ResponseEntity.notFound().build());
     }
 

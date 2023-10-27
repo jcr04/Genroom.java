@@ -111,4 +111,20 @@ public class Evento {
         reservas.remove(reserva);
         reserva.setEvento(null);
     }
+
+    @Override
+    public String toString() {
+        return "Evento{" +
+                "id=" + id +
+                ", titulo='" + titulo + '\'' +
+                ", descricao='" + descricao + '\'' +
+                ", dataHoraInicio=" + dataHoraInicio +
+                ", dataHoraFim=" + dataHoraFim +
+                ", localizacao='" + localizacao + '\'' +
+                ", responsavel='" + responsavel + '\'' +
+                ", status='" + status + '\'' +
+                ", reservas=" + (reservas != null ? reservas.size() : 0) +  // para evitar NullPointerException
+                '}';
+    }
+
 }

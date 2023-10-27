@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -26,7 +27,7 @@ public class ReservaController {
     @GetMapping("/{id}")
     public ResponseEntity<Reserva> findById(@PathVariable Long id) {
         return reservaService.findById(id)
-                .map(reserva -> ResponseEntity.ok(reserva))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -54,7 +55,14 @@ public class ReservaController {
 
     // Endpoint adicional para buscar reservas por intervalo de tempo
     @GetMapping("/intervalo")
-    public List<Reserva> findByInicioBetween(@RequestParam LocalDateTime start, @RequestParam LocalDateTime end) {
+    public List<Reserva> findByInicioBetween(
+            @RequestParam("inicio") String startStr,
+            @RequestParam("fim") String endStr) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        LocalDateTime start = LocalDateTime.parse(startStr, formatter);
+        LocalDateTime end = LocalDateTime.parse(endStr, formatter);
+
         return reservaService.findByInicioBetween(start, end);
     }
 
@@ -63,5 +71,32 @@ public class ReservaController {
     public List<Reserva> findBySala_Id(@PathVariable Long salaId) {
         return reservaService.findBySala_Id(salaId);
     }
-}
 
+    // Novos endpoints:
+
+    // Endpoint para buscar reservas por evento
+    @GetMapping("/evento/{eventoId}")
+    public List<Reserva> findByEvento_Id(@PathVariable Long eventoId) {
+        return reservaService.findByEvento_Id(eventoId);
+    }
+
+    // Endpoint para buscar reservas por status
+    @GetMapping("/status/{status}")
+    public List<Reserva> findByStatus(@PathVariable String status) {
+        return reservaService.findByStatus(status);
+    }
+
+    // Endpoint para buscar reservas por sala e intervalo de tempo
+    @GetMapping("/sala/{salaId}/intervalo")
+    public List<Reserva> findBySala_IdAndInicioBetween(
+            @PathVariable Long salaId,
+            @RequestParam("inicio") String startStr,
+            @RequestParam("fim") String endStr) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        LocalDateTime start = LocalDateTime.parse(startStr, formatter);
+        LocalDateTime end = LocalDateTime.parse(endStr, formatter);
+
+        return reservaService.findBySala_IdAndInicioBetween(salaId, start, end);
+    }
+}

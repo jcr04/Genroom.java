@@ -23,7 +23,8 @@ public class ReservaService {
     }
 
     public Reserva save(Reserva reserva) {
-        return reservaRepository.save(reserva);
+        Reserva savedReserva = reservaRepository.save(reserva);
+        return reservaRepository.findByIdWithDetails(savedReserva.getId()).orElse(savedReserva);
     }
 
     public void deleteById(Long id) {
@@ -37,5 +38,26 @@ public class ReservaService {
     public List<Reserva> findBySala_Id(Long salaId) {
         return reservaRepository.findBySala_Id(salaId);
     }
-}
 
+    // Novos métodos:
+
+    public List<Reserva> findByEvento_Id(Long eventoId) {
+        return reservaRepository.findByEvento_Id(eventoId);
+    }
+
+    public List<Reserva> findByStatus(String status) {
+        return reservaRepository.findByStatus(status);
+    }
+
+    public List<Reserva> findBySala_IdAndInicioBetween(Long salaId, LocalDateTime start, LocalDateTime end) {
+        return reservaRepository.findBySala_IdAndInicioBetween(salaId, start, end);
+    }
+
+    public void updateStatus(String status, Long reservaId) {
+        reservaRepository.updateStatus(status, reservaId);
+    }
+
+    public void deleteOldReservas(LocalDateTime now) {
+        reservaRepository.deleteOldReservas(now);
+    }
+}
