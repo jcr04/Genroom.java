@@ -1,14 +1,18 @@
 package com.projetos.genroom.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import java.text.SimpleDateFormat;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Set;
 
 @Entity
 @Table(name = "salas")
+@Data
+@NoArgsConstructor
 public class Sala {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,82 +23,30 @@ public class Sala {
     @OneToMany(mappedBy = "sala", cascade = CascadeType.ALL)
     private Set<Reserva> reservas;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dataCriacao;
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime dataCriacao;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dataModificacao;
-
-    // Getters
-    public Long getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public int getCapacidade() {
-        return capacidade;
-    }
-
-    public Set<Reserva> getReservas() {
-        return reservas;
-    }
-
-    public String getDataCriacao() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        return sdf.format(dataCriacao);
-    }
-
-    public String getDataModificacao() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        return dataModificacao != null ? sdf.format(dataModificacao) : null;
-    }
-
-    // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public void setCapacidade(int capacidade) {
-        this.capacidade = capacidade;
-    }
-
-    public void setReservas(Set<Reserva> reservas) {
-        this.reservas = reservas;
-    }
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime dataModificacao;
 
     @PrePersist
     protected void onCreate() {
-        dataCriacao = new Date();
+        dataCriacao = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        dataModificacao = new Date();
-    }
-
-    @Override
-    public String toString() {
-        return "Sala{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", capacidade=" + capacidade +
-                ", reservas=" + (reservas != null ? reservas.size() : 0) +
-                ", dataCriacao=" + getDataCriacao() +
-                ", dataModificacao=" + getDataModificacao() +
-                '}';
+        dataModificacao = LocalDateTime.now();
     }
 
     public boolean isDisponivel(String inicio, String fim) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         LocalDateTime inicioDateTime = LocalDateTime.parse(inicio, formatter);
         LocalDateTime fimDateTime = LocalDateTime.parse(fim, formatter);
+
+        if (reservas == null) {
+            return true;  // Sala está disponível se não há reservas
+        }
 
         for (Reserva reserva : reservas) {
             LocalDateTime reservaInicio = reserva.getInicio();

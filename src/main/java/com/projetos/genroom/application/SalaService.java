@@ -32,8 +32,9 @@ public class SalaService {
         }
     }
 
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         salaRepository.deleteById(id);
+        return false;
     }
 
     public List<Sala> findByNome(String nome) {

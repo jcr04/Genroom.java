@@ -27,8 +27,9 @@ public class ReservaService {
         return reservaRepository.findByIdWithDetails(savedReserva.getId()).orElse(savedReserva);
     }
 
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         reservaRepository.deleteById(id);
+        return false;
     }
 
     public List<Reserva> findByInicioBetween(LocalDateTime start, LocalDateTime end) {

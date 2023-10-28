@@ -2,28 +2,26 @@ package com.projetos.genroom.presentation;
 
 import com.projetos.genroom.application.ReservaService;
 import com.projetos.genroom.domain.Reserva;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservas")
+@RequiredArgsConstructor
 public class ReservaController {
 
-    @Autowired
-    private ReservaService reservaService;
+    private final ReservaService reservaService;
 
-    // Endpoint para listar todas as reservas
     @GetMapping
-    public List<Reserva> findAll() {
-        return reservaService.findAll();
+    public ResponseEntity<List<Reserva>> findAll() {
+        return ResponseEntity.ok(reservaService.findAll());
     }
 
-    // Endpoint para buscar uma reserva por ID
     @GetMapping("/{id}")
     public ResponseEntity<Reserva> findById(@PathVariable Long id) {
         return reservaService.findById(id)
@@ -31,13 +29,11 @@ public class ReservaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Endpoint para criar uma nova reserva
     @PostMapping
-    public Reserva create(@RequestBody Reserva reserva) {
-        return reservaService.save(reserva);
+    public ResponseEntity<Reserva> create(@RequestBody Reserva reserva) {
+        return ResponseEntity.ok(reservaService.save(reserva));
     }
 
-    // Endpoint para atualizar uma reserva existente
     @PutMapping("/{id}")
     public ResponseEntity<Reserva> update(@PathVariable Long id, @RequestBody Reserva reserva) {
         return reservaService.findById(id).map(existingReserva -> {
@@ -46,57 +42,38 @@ public class ReservaController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // Endpoint para deletar uma reserva
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservaService.findById(id).ifPresent(reserva -> reservaService.deleteById(id));
-        return ResponseEntity.noContent().build();
+        return reservaService.deleteById(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
-    // Endpoint adicional para buscar reservas por intervalo de tempo
     @GetMapping("/intervalo")
-    public List<Reserva> findByInicioBetween(
-            @RequestParam("inicio") String startStr,
-            @RequestParam("fim") String endStr) {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        LocalDateTime start = LocalDateTime.parse(startStr, formatter);
-        LocalDateTime end = LocalDateTime.parse(endStr, formatter);
-
-        return reservaService.findByInicioBetween(start, end);
+    public ResponseEntity<List<Reserva>> findByInicioBetween(
+            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime fim) {
+        return ResponseEntity.ok(reservaService.findByInicioBetween(inicio, fim));
     }
 
-    // Endpoint adicional para buscar reservas por sala
     @GetMapping("/sala/{salaId}")
-    public List<Reserva> findBySala_Id(@PathVariable Long salaId) {
-        return reservaService.findBySala_Id(salaId);
+    public ResponseEntity<List<Reserva>> findBySala_Id(@PathVariable Long salaId) {
+        return ResponseEntity.ok(reservaService.findBySala_Id(salaId));
     }
 
-    // Novos endpoints:
-
-    // Endpoint para buscar reservas por evento
     @GetMapping("/evento/{eventoId}")
-    public List<Reserva> findByEvento_Id(@PathVariable Long eventoId) {
-        return reservaService.findByEvento_Id(eventoId);
+    public ResponseEntity<List<Reserva>> findByEvento_Id(@PathVariable Long eventoId) {
+        return ResponseEntity.ok(reservaService.findByEvento_Id(eventoId));
     }
 
-    // Endpoint para buscar reservas por status
     @GetMapping("/status/{status}")
-    public List<Reserva> findByStatus(@PathVariable String status) {
-        return reservaService.findByStatus(status);
+    public ResponseEntity<List<Reserva>> findByStatus(@PathVariable String status) {
+        return ResponseEntity.ok(reservaService.findByStatus(status));
     }
 
-    // Endpoint para buscar reservas por sala e intervalo de tempo
     @GetMapping("/sala/{salaId}/intervalo")
-    public List<Reserva> findBySala_IdAndInicioBetween(
+    public ResponseEntity<List<Reserva>> findBySala_IdAndInicioBetween(
             @PathVariable Long salaId,
-            @RequestParam("inicio") String startStr,
-            @RequestParam("fim") String endStr) {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        LocalDateTime start = LocalDateTime.parse(startStr, formatter);
-        LocalDateTime end = LocalDateTime.parse(endStr, formatter);
-
-        return reservaService.findBySala_IdAndInicioBetween(salaId, start, end);
+            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime fim) {
+        return ResponseEntity.ok(reservaService.findBySala_IdAndInicioBetween(salaId, inicio, fim));
     }
 }

@@ -2,7 +2,8 @@ package com.projetos.genroom.presentation;
 
 import com.projetos.genroom.application.SalaService;
 import com.projetos.genroom.domain.Sala;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,18 +12,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/salas")
+@RequiredArgsConstructor
 public class SalaController {
 
-    @Autowired
-    private SalaService salaService;
+    private final SalaService salaService;
 
-    // Endpoint para listar todas as salas
     @GetMapping
-    public List<Sala> findAll() {
-        return salaService.findAll();
+    public ResponseEntity<List<Sala>> findAll() {
+        return ResponseEntity.ok(salaService.findAll());
     }
 
-    // Endpoint para buscar uma sala por ID
     @GetMapping("/{id}")
     public ResponseEntity<Sala> findById(@PathVariable Long id) {
         return salaService.findById(id)
@@ -30,28 +29,11 @@ public class SalaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Endpoint para criar uma nova sala
     @PostMapping
-    public ResponseEntity<Sala> create(@RequestBody Sala sala) {
-        try {
-            Sala newSala = salaService.save(sala);
-            return ResponseEntity.ok(newSala);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+    public ResponseEntity<Sala> create(@RequestBody Sala sala) throws Exception {
+        return ResponseEntity.ok(salaService.save(sala));
     }
 
-    @GetMapping("/disponiveis/capacidade/{capacidade}")
-    public List<Sala> findAvailableRoomsByCapacity(@PathVariable int capacidade, @RequestParam LocalDateTime inicio, @RequestParam LocalDateTime fim) {
-        return salaService.findAvailableRoomsByCapacity(capacidade, inicio, fim);
-    }
-
-    @GetMapping("/nome/{nome}/capacidade/{capacidade}")
-    public List<Sala> findByNomeAndCapacidadeGreaterThanEqual(@PathVariable String nome, @PathVariable int capacidade) {
-        return salaService.findByNomeAndCapacidadeGreaterThanEqual(nome, capacidade);
-    }
-
-    // Endpoint para atualizar uma sala existente
     @PutMapping("/{id}")
     public ResponseEntity<Sala> update(@PathVariable Long id, @RequestBody Sala sala) {
         return salaService.findById(id).map(existingSala -> {
@@ -64,29 +46,40 @@ public class SalaController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // Endpoint para deletar uma sala
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        salaService.findById(id).ifPresent(sala -> salaService.deleteById(id));
-        return ResponseEntity.noContent().build();
+        return salaService.deleteById(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
-    // Endpoint adicional para buscar salas por nome
     @GetMapping("/nome/{nome}")
-    public List<Sala> findByNome(@PathVariable String nome) {
-        return salaService.findByNome(nome);
+    public ResponseEntity<List<Sala>> findByNome(@PathVariable String nome) {
+        return ResponseEntity.ok(salaService.findByNome(nome));
     }
 
-    // Endpoint adicional para buscar salas por capacidade
     @GetMapping("/capacidade/{capacidade}")
-    public List<Sala> findByCapacidadeGreaterThanEqual(@PathVariable int capacidade) {
-        return salaService.findByCapacidadeGreaterThanEqual(capacidade);
+    public ResponseEntity<List<Sala>> findByCapacidadeGreaterThanEqual(@PathVariable int capacidade) {
+        return ResponseEntity.ok(salaService.findByCapacidadeGreaterThanEqual(capacidade));
     }
 
-    // Endpoint adicional para buscar salas disponíveis em um intervalo de tempo
     @GetMapping("/disponiveis")
-    public List<Sala> findAvailableRooms(@RequestParam LocalDateTime inicio, @RequestParam LocalDateTime fim) {
-        return salaService.findAvailableRooms(inicio, fim);
+    public ResponseEntity<List<Sala>> findAvailableRooms(
+            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime fim) {
+        return ResponseEntity.ok(salaService.findAvailableRooms(inicio, fim));
+    }
+
+    @GetMapping("/disponiveis/capacidade/{capacidade}")
+    public ResponseEntity<List<Sala>> findAvailableRoomsByCapacity(
+            @PathVariable int capacidade,
+            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") LocalDateTime fim) {
+        return ResponseEntity.ok(salaService.findAvailableRoomsByCapacity(capacidade, inicio, fim));
+    }
+
+    @GetMapping("/nome/{nome}/capacidade/{capacidade}")
+    public ResponseEntity<List<Sala>> findByNomeAndCapacidadeGreaterThanEqual(
+            @PathVariable String nome,
+            @PathVariable int capacidade) {
+        return ResponseEntity.ok(salaService.findByNomeAndCapacidadeGreaterThanEqual(nome, capacidade));
     }
 }
-

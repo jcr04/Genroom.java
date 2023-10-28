@@ -27,8 +27,9 @@ public class EventoService {
         return eventoRepository.save(evento);
     }
 
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         eventoRepository.deleteById(id);
+        return false;
     }
 
     public List<Evento> findByTitulo(String titulo) {
