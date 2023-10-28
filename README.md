@@ -67,3 +67,7 @@ server.port=8081
 6. A aplicação estará rodando no endereço: `http://localhost:8081`.
 
 Para testar os endpoints, você pode usar ferramentas como Postman ou Curl. As requisições devem ser feitas para a base da URL `http://localhost:8081/api`.
+
+#### Exemplo de um Endpoint:
+- /api/reservas (GET): Listar Todas as Reservas
+* - ![Screenshot_4](https://github.com/jcr04/Genroom.java/assets/70778525/4b1ab399-6dea-4d2b-8308-eff1674bfb7e)
