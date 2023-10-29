@@ -1,6 +1,8 @@
 package com.projetos.genroom.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,15 +43,11 @@ public class Evento {
     private String status;
 
     @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL)
-    private Set<Reserva> reservas;
+    @JsonIgnore
+    private Set<Reserva> reservasCollection;
 
-    public void addReserva(Reserva reserva) {
-        reservas.add(reserva);
-        reserva.setEvento(this);
-    }
-
-    public void removeReserva(Reserva reserva) {
-        reservas.remove(reserva);
-        reserva.setEvento(null);
+    @JsonFormat(shape = JsonFormat.Shape.BOOLEAN)
+    public boolean getReservas() {
+        return (reservasCollection != null && !reservasCollection.isEmpty());
     }
 }

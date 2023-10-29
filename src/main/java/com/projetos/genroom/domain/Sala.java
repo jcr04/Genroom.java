@@ -1,6 +1,8 @@
 package com.projetos.genroom.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +23,8 @@ public class Sala {
     private int capacidade;
 
     @OneToMany(mappedBy = "sala", cascade = CascadeType.ALL)
-    private Set<Reserva> reservas;
+    @JsonIgnore
+    private Set<Reserva> reservasCollection;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime dataCriacao;
@@ -44,11 +47,11 @@ public class Sala {
         LocalDateTime inicioDateTime = LocalDateTime.parse(inicio, formatter);
         LocalDateTime fimDateTime = LocalDateTime.parse(fim, formatter);
 
-        if (reservas == null) {
+        if (reservasCollection == null) {
             return true;  // Sala está disponível se não há reservas
         }
 
-        for (Reserva reserva : reservas) {
+        for (Reserva reserva : reservasCollection) {
             LocalDateTime reservaInicio = reserva.getInicio();
             LocalDateTime reservaFim = reserva.getFim();
             if ((inicioDateTime.isEqual(reservaInicio) || inicioDateTime.isAfter(reservaInicio)) && inicioDateTime.isBefore(reservaFim) ||
@@ -58,4 +61,10 @@ public class Sala {
         }
         return true;  // Sala está disponível
     }
+
+    @JsonFormat(shape = JsonFormat.Shape.BOOLEAN)
+    public boolean getReservas() {
+        return (reservasCollection != null && !reservasCollection.isEmpty());
+    }
+
 }
