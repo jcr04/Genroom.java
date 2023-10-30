@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "salas")
@@ -74,5 +75,6 @@ public class Sala {
     public boolean getReservas() {
         return (reservasCollection != null && !reservasCollection.isEmpty());
     }
+
 
 }
