@@ -32,6 +32,14 @@ public class Sala {
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime dataModificacao;
 
+    @ManyToMany
+    @JoinTable(
+            name = "sala_recurso",
+            joinColumns = @JoinColumn(name = "sala_id"),
+            inverseJoinColumns = @JoinColumn(name = "recurso_id")
+    )
+    private Set<Recurso> recursos;
+
     @PrePersist
     protected void onCreate() {
         dataCriacao = LocalDateTime.now();
