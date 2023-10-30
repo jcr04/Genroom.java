@@ -49,6 +49,14 @@ A API Genroom oferece uma série de endpoints para manipulação e consulta de d
 - **Buscar eventos por título:** `GET /api/eventos/titulo/{titulo}`
 - **Buscar eventos por descrição:** `GET /api/eventos/descricao?descricao={descricao}`
 
+### Recursos
+
+- **LIstar todos os Recursos:** `GET /api/recurso`
+- **Buscar Recurso por ID:** `GET /api/recurso/{id}`
+- **Criar novo Recurwso:** `POST /api/recurso`
+- **Atualizar um Recruso Exitente:** `PUT /api/recursos/{id}`
+- **Deletar um Recurso:** `DELETE /api/recurso/{id}`
+
 ## Como Executar
 
 1. Clone o repositório para sua máquina local.
